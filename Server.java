@@ -5,33 +5,54 @@ import java.util.*; // {PrintWriter}
 // Server
 public class Server {
     // Main
-    public static ServerSocket serverSock; // Define class
-
     public static void main(String[] args) throws Exception {
-        System.out.println("Opening port ...\n");
 
-        serverSock = new ServerSocket(8081); // Step 1: Start Server
-        System.out.println("Server Running on port 8081 !!\n Waiting for client ...");
+        ServerSocket server = null;
 
-        Socket link = serverSock.accept(); // Step 2: Accept request, Establish connection
+        try{
 
-        // create streams Step 3 and 4
-        Scanner input = new Scanner(link.getInputStream());
-        PrintWriter output = new PrintWriter(link.getOutputStream(), true);
+            //Server is listening on port 1234
+            System.out.println("Server is Listening on Port 1234");
+            server = new ServerSocket(1234);
+            server.setReuseAddress(true);
 
-        // Step 5: Echo messages untill "close"
-        String msg = "";
+            //For getting multiple client request 
+            //running infinite loop
+            while(true)
+            {
+                //receiving incoming client request through socket object
+                Socket client = server.accept();
 
-        while (!msg.equalsIgnoreCase("close")) {
-            // Echo
-            msg = input.nextLine(); // Get from client
-            System.out.println("Client Says: " + msg); // Print
-            output.println(msg); // Send to client
+                //A Separate Message regarding a new client connection to server
+                System.out.println("New Client Connection : "+client.getInetAddress().getHostAddress());
+                // Creating a new Thread Object
+                HandleClient cSock = new HandleClient(client);
+
+                //This Client will be separately handled by the thread
+                Thread obj  = new Thread(cSock);
+                
+                //starting the execution
+                obj.start();
+                
+            }
         }
-        serverSock.close();
-        output.close();
-        output.close();
-        input.close();
-        link.close(); // Close Connection
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+        finally{
+            if(server != null)
+            {
+                try{
+                    server.close();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 }
+

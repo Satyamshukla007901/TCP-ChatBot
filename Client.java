@@ -9,27 +9,39 @@ public class Client {
     public static void main(String[] args) throws Exception {
         System.out.println("Connecting to server ...\n");
 
-        Socket link = new Socket(InetAddress.getLocalHost(), 8081); // Step 1: Server connection request
+        //establishing a connection
+        //by passing parameters of ip addresss and a free port
+        try(Socket socket = new Socket("localhost",1234))
+        {
+            //sending text to the server
+            PrintWriter out = new PrintWriter(socket.getOutputStream(),true);
 
-        System.out.println("Send message to server");
-        // create streams Step 2, 3 and 4
-        Scanner input = new Scanner(link.getInputStream());
-        PrintWriter output = new PrintWriter(link.getOutputStream(), true);
-        Scanner cmdInput = new Scanner(System.in); // Get input from user's screen
+            //receiving text from the server
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        // Step 5: Echo messages untill "close"
-        String msg = "";
+            //initaialising an object of scanner class
+            Scanner sc = new Scanner(System.in);
+            String chat = "";
 
-        while (!msg.equalsIgnoreCase("close")) {
-            // Echo
-            msg = cmdInput.nextLine(); // Get from input user
-            output.println(msg); // Send to server
-            msg = input.nextLine(); // Get from server
-            System.out.println("Server Says: " + msg); // Print
+            while(!"exit".equalsIgnoreCase(chat))
+            {
+                // reading from user
+                chat = sc.nextLine();
+
+                //sending the text to the server
+                out.println(chat);
+                out.flush();
+
+                //Receiving and displaying the server reply
+                System.out.println("Server: "+in.readLine());
+            }
+
+            //closing the scanner object
+            sc.close();
         }
-        input.close();
-        output.close();
-        cmdInput.close();
-        link.close(); // Close Connection
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }
