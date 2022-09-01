@@ -33,7 +33,7 @@ public class Client {
                 out.flush();
 
                 //Receiving and displaying the server reply
-                System.out.println("Server: "+in.readLine());
+                System.out.println("Message Sent: "+in.readLine());
             }
 
             //closing the scanner object

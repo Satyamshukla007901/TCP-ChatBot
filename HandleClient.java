@@ -24,11 +24,13 @@ public class HandleClient implements Runnable{
             in = new BufferedReader(new InputStreamReader(cSocket.getInputStream()));
 
             String chat;
+            // int cnt = 1;
             while((chat = in.readLine())!=null)
             {
                 //Displaying the Received the message from the client
                 System.out.println("Client : "+chat);
                 out.println(chat);
+                
             }
         }
         catch (IOException e)
